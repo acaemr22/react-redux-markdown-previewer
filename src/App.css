@@ -1,0 +1,43 @@
+#preview {
+  background: linear-gradient(
+    180deg,
+    rgba(48, 40, 129, 0.79) 0%,
+    rgba(48, 40, 129, 0.62) 72.92%,
+    rgba(48, 40, 129, 0.36) 100%
+  );
+}
+
+.previewer-title {
+  background: linear-gradient(
+    270deg,
+    rgba(91, 60, 214, 0.5) 0%,
+    rgba(63, 27, 207, 0.58) 43.37%,
+    rgba(63, 27, 207, 0.26) 100%
+  );
+}
+
+#editor::-webkit-scrollbar {
+  cursor: default;
+  background: #fff;
+  width: 10px;
+}
+
+#editor::-webkit-scrollbar-thumb {
+  background: rgba(128, 128, 128, 0.432);
+  border-radius: 100vh;
+  border: solid #fff 2px;
+}
+
+#editor::-webkit-scrollbar-thumb:hover {
+  cursor: pointer;
+  background: rgba(128, 128, 128, 0.798);
+}
+
+#markdown-wrapper {
+  box-shadow: 5px 5px 10px 0px rgba(0, 0, 0, 0.25),
+    0px 0px 100px 0px rgba(0, 178, 255, 0.7);
+}
+
+#previewer {
+  box-shadow: 10px 10px 10px 0px rgba(0, 0, 0, 0.25);
+}
