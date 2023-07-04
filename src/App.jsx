@@ -1,27 +1,23 @@
-import { ArrowsOut } from "@phosphor-icons/react";
+import { ArrowsOut, ArrowsIn } from "@phosphor-icons/react";
 import "./App.css";
 import { useState, useEffect, useRef } from "react";
 import { marked } from "marked";
 import { React } from "react";
+import { useDispatch } from "react-redux";
+import {
+  changeText,
+  toggleFullPreviewer,
+  toggleFullEditor,
+} from "./features/mdSlice";
+import { useSelector } from "react-redux";
 
 export default function App() {
-  const [text, setText] = useState(`# H1
-## H2
-[title](https://www.google.com)
-![image](vite.svg)
-\`console.log("")\`
-\`\`\`
-console.log()
-\`\`\`
-- First item
-> blockquote
-**bold text**
-`);
-
-  const [fullEditor, setFullEditor] = useState(false);
-  const [fullPreviewer, setFullPreviewer] = useState(false);
-
+  const dispatch = useDispatch();
   const previewRef = useRef(null);
+
+  const fullEditor = useSelector((state) => state.md.fullEditor);
+  const fullPreviewer = useSelector((state) => state.md.fullPreviewer);
+  const text = useSelector((state) => state.md.text);
 
   marked.setOptions({
     breaks: true,
@@ -30,7 +26,7 @@ console.log()
   });
 
   const handleChange = (e) => {
-    setText(e.target.value);
+    dispatch(changeText({ text: e.target.value }));
   };
 
   useEffect(() => {
@@ -39,9 +35,12 @@ console.log()
         .parse(text)
         .replace(/&gt;/g, "<blockquote></blockquote>")
         .replace(/\\r/g, "<br>")
-        .replace(/<h1>/g, "<h1 class='text-2xl font-bold'>")
-        .replace(/<h2>/g, "<h2 class='text-xl font-bold'>")
-        .replace(/<h3>/g, "<h3 class='text-lg font-bold'>");
+        .replace(/<h1>/g, "<h1 class='py-1 text-4xl font-bold'>")
+        .replace(/<h2>/g, "<h2 class='py-1 text-3xl font-bold'>")
+        .replace(/<h3>/g, "<h3 class='py-1 text-2xl font-bold'>")
+        .replace(/<[/]h1>/g, "</h1><hr class='mb-1'/>")
+        .replace(/<[/]h2>/g, "</h2><hr class='mb-1'/>")
+        .replace(/<[/]h3>/g, "</h3><hr class='mb-1'/>");
     }
     if (!previewRef.current.innerText || !text) {
       previewRef.current.innerHTML = `Please Provide Some Markdown to Show`;
@@ -49,10 +48,10 @@ console.log()
   }, [text]);
 
   const toggleEditor = () => {
-    setFullEditor((e) => !e);
+    dispatch(toggleFullEditor());
   };
   const togglePreviewer = () => {
-    setFullPreviewer((e) => !e);
+    dispatch(toggleFullPreviewer());
   };
 
   return (
@@ -72,11 +71,19 @@ console.log()
           className="toolbar bg-[#49B9C0] w-full text-center font-semibold flex flex-row items-center justify-between px-2"
         >
           Editor
-          <ArrowsOut
-            className="hover:text-white hover:cursor-pointer"
-            size={20}
-            onClick={toggleEditor}
-          />
+          {!fullEditor ? (
+            <ArrowsOut
+              className="hover:text-white hover:cursor-pointer"
+              size={20}
+              onClick={toggleEditor}
+            />
+          ) : (
+            <ArrowsIn
+              className="hover:text-white hover:cursor-pointer"
+              size={20}
+              onClick={toggleEditor}
+            />
+          )}
         </div>
         <textarea
           name="editor"
@@ -95,18 +102,26 @@ console.log()
           fullEditor ? "hidden" : ""
         }`}
       >
-        <div className="previewer-title toolbar text-center font-normal flex flex-row items-center justify-between px-2 ">
+        <div className="previewer-title toolbar text-center font-normal flex flex-row items-center justify-between px-4 ">
           Previewer
-          <ArrowsOut
-            className="hover:cursor-pointer hover:text-black"
-            size={20}
-            onClick={togglePreviewer}
-          />
+          {!fullPreviewer ? (
+            <ArrowsOut
+              className="hover:cursor-pointer hover:text-black"
+              size={20}
+              onClick={togglePreviewer}
+            />
+          ) : (
+            <ArrowsIn
+              className="hover:cursor-pointer hover:text-black"
+              size={20}
+              onClick={togglePreviewer}
+            />
+          )}{" "}
         </div>
         <div
           id="preview"
           ref={previewRef}
-          className={`p-2 ${fullPreviewer ? "full" : ""}`}
+          className={`p-2 px-4 ${fullPreviewer ? "full" : ""}`}
         ></div>
       </div>
       <footer className="flex-col flex items-center justify-center text-white gap-y-4">
@@ -132,5 +147,3 @@ console.log()
     </main>
   );
 }
-
-document.querySelector("body");
